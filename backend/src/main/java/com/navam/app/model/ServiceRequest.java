@@ -19,6 +19,15 @@ public class ServiceRequest {
     private String companyName;
     private String serviceType;
     private String description;
+    private String clientId; // Optional: ID of the registered user
+    private String projectId; // Optional: ID of the existing project
+    private String projectName; // For NEW_PROJECT requests
+    private String priority; // For PROJECT_UPDATE (Low, Medium, High)
+    private String phoneNumber;
+    private String budgetRange;
+    private String timeline;
+    private String referenceLinks;
+    private String requestType; // NEW_CLIENT, NEW_PROJECT, PROJECT_UPDATE
     private String status; // PENDING, APPROVED, REJECTED
     private LocalDateTime createdAt;
 }

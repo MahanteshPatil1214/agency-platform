@@ -32,6 +32,26 @@ export const getClientProjects = async () => {
     }
 };
 
+export const submitServiceRequest = async (requestData) => {
+    try {
+        const response = await axios.post(`${API_URL}/requests/submit`, requestData, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error submitting service request", error);
+        throw error;
+    }
+};
+
+export const getMyRequests = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/requests/my-requests`, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching my requests", error);
+        throw error;
+    }
+};
+
 // Admin Dashboard API
 export const getAdminStats = async () => {
     try {
@@ -63,6 +83,16 @@ export const getProjects = async () => {
     }
 };
 
+export const getAllProjects = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/projects/all`, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching all projects", error);
+        throw error;
+    }
+};
+
 export const getServiceRequests = async () => {
     try {
         const response = await axios.get(`${API_URL}/requests/all`, { headers: getAuthHeader() });
@@ -79,6 +109,36 @@ export const createProject = async (projectData) => {
         return response.data;
     } catch (error) {
         console.error("Error creating project", error);
+        throw error;
+    }
+};
+
+export const getProjectById = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}/projects/${id}`, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching project", error);
+        throw error;
+    }
+};
+
+export const addTask = async (projectId, task) => {
+    try {
+        const response = await axios.post(`${API_URL}/projects/${projectId}/tasks`, task, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding task", error);
+        throw error;
+    }
+};
+
+export const updateTask = async (projectId, taskId, taskUpdate) => {
+    try {
+        const response = await axios.put(`${API_URL}/projects/${projectId}/tasks/${taskId}`, taskUpdate, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating task", error);
         throw error;
     }
 };

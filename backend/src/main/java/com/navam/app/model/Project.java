@@ -17,8 +17,15 @@ public class Project {
     private String name;
     private String description;
     private String status; // "Active", "Pending", "Completed"
+    private String serviceType; // "SEO", "Web Development", "Social Media"
     private String clientId; // User ID of the client
     private String update; // Latest update message
+    private int progress; // 0-100
+    private String priority; // "Low", "Medium", "High", "Critical"
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private java.util.List<ProjectTask> tasks;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

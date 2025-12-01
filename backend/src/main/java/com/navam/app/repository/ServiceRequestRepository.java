@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ServiceRequestRepository extends MongoRepository<ServiceRequest, String> {
     List<ServiceRequest> findByStatus(String status);
+
+    List<ServiceRequest> findByClientId(String clientId);
 }

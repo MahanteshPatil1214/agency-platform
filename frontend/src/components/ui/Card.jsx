@@ -6,7 +6,7 @@ const Card = ({ children, className = '', ...props }) => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`glass rounded-2xl p-8 border border-white/10 ${className}`}
+            className={`glass-card rounded-2xl p-8 ${className}`}
             {...props}
         >
             {children}

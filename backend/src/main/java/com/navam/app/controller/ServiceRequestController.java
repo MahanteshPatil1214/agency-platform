@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.navam.app.security.UserDetailsImpl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +23,33 @@ public class ServiceRequestController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitRequest(@RequestBody ServiceRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // If user is authenticated, link to client
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            request.setClientId(userDetails.getId());
+
+            // Auto-populate user details if missing
+            if (request.getFullName() == null || request.getFullName().isEmpty()) {
+                request.setFullName(userDetails.getFullName());
+            }
+            if (request.getEmail() == null || request.getEmail().isEmpty()) {
+                request.setEmail(userDetails.getEmail());
+            }
+
+            // If it's a client, it must be NEW_PROJECT or PROJECT_UPDATE
+            if (request.getRequestType() == null) {
+                request.setRequestType("NEW_PROJECT"); // Default for client if not specified
+            }
+        } else {
+            // If unauthenticated, it MUST be a NEW_CLIENT request
+            request.setRequestType("NEW_CLIENT");
+            request.setClientId(null);
+            request.setProjectId(null);
+        }
+
         request.setStatus("PENDING");
         request.setCreatedAt(LocalDateTime.now());
         serviceRequestRepository.save(request);
@@ -30,6 +60,14 @@ public class ServiceRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     public List<ServiceRequest> getAllRequests() {
         return serviceRequestRepository.findAll();
+    }
+
+    @GetMapping("/my-requests")
+    @PreAuthorize("hasRole('CLIENT')")
+    public List<ServiceRequest> getMyRequests() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return serviceRequestRepository.findByClientId(userDetails.getId());
     }
 
     @PutMapping("/{id}/status")

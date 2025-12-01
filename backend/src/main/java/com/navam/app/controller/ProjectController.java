@@ -58,13 +58,69 @@ public class ProjectController {
     public ResponseEntity<?> createProject(@RequestBody Project project) {
         project.setCreatedAt(LocalDateTime.now());
         project.setUpdatedAt(LocalDateTime.now());
+        if (project.getTasks() == null) {
+            project.setTasks(new java.util.ArrayList<>());
+        }
+        if (project.getPriority() == null) {
+            project.setPriority("Medium");
+        }
         projectRepository.save(project);
         return ResponseEntity.ok("Project created successfully!");
+    }
+
+    @PostMapping("/{projectId}/tasks")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addTask(@PathVariable String projectId,
+            @RequestBody com.navam.app.model.ProjectTask task) {
+        return projectRepository.findById(projectId).map(project -> {
+            if (project.getTasks() == null) {
+                project.setTasks(new java.util.ArrayList<>());
+            }
+            task.setId(java.util.UUID.randomUUID().toString());
+            project.getTasks().add(task);
+            project.setUpdatedAt(LocalDateTime.now());
+            projectRepository.save(project);
+            return ResponseEntity.ok(project);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{projectId}/tasks/{taskId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT')")
+    public ResponseEntity<?> updateTask(@PathVariable String projectId, @PathVariable String taskId,
+            @RequestBody com.navam.app.model.ProjectTask taskUpdate) {
+        return projectRepository.findById(projectId).map(project -> {
+            boolean found = false;
+            if (project.getTasks() != null) {
+                for (com.navam.app.model.ProjectTask task : project.getTasks()) {
+                    if (task.getId().equals(taskId)) {
+                        task.setStatus(taskUpdate.getStatus());
+                        task.setCompleted(taskUpdate.isCompleted());
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (found) {
+                project.setUpdatedAt(LocalDateTime.now());
+                projectRepository.save(project);
+                return ResponseEntity.ok(project);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT')")
+    public ResponseEntity<?> getProjectById(@PathVariable String id) {
+        return projectRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

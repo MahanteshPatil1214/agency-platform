@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import DashboardLayout from "../../components/layout/DashboardLayout";
@@ -6,23 +7,29 @@ import Card from "../../components/ui/Card";
 import { getClientStats, getClientProjects } from '../../api/dashboard';
 
 const StatCard = ({ title, value, icon: Icon, trend, color }) => (
-    <Card className="p-6">
-        <div className="flex items-start justify-between mb-4">
-            <div className={`p-3 rounded-xl ${color} bg-opacity-10`}>
-                <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
-            </div>
-            {trend && (
-                <span className="text-sm font-medium text-green-400 bg-green-400/10 px-2 py-1 rounded-lg">
-                    {trend}
-                </span>
-            )}
+    <div className="glass-card p-6 relative overflow-hidden group">
+        <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300`}>
+            <Icon className="w-24 h-24" />
         </div>
-        <h3 className="text-text-muted text-sm font-medium mb-1">{title}</h3>
-        <p className="text-3xl font-heading font-bold">{value}</p>
-    </Card>
+        <div className="relative z-10">
+            <div className="flex items-start justify-between mb-4">
+                <div className={`p-3 rounded-xl ${color} bg-opacity-10 border border-white/5`}>
+                    <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
+                </div>
+                {trend && (
+                    <span className="text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded-lg flex items-center gap-1">
+                        {trend}
+                    </span>
+                )}
+            </div>
+            <h3 className="text-text-muted text-sm font-medium mb-1">{title}</h3>
+            <p className="text-3xl font-heading font-bold text-white">{value}</p>
+        </div>
+    </div>
 );
 
 const ClientDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         activeProjects: 0,
         pendingTasks: 0,
@@ -73,20 +80,20 @@ const ClientDashboard = () => {
                     title="Active Projects"
                     value={stats.activeProjects}
                     icon={Briefcase}
-                    color="bg-blue-500"
+                    color="bg-primary"
                     trend="+1 this month"
                 />
                 <StatCard
                     title="Pending Tasks"
                     value={stats.pendingTasks}
                     icon={Clock}
-                    color="bg-yellow-500"
+                    color="bg-accent"
                 />
                 <StatCard
                     title="Completed"
                     value={stats.completedProjects}
                     icon={CheckCircle}
-                    color="bg-green-500"
+                    color="bg-secondary"
                     trend="+2 this week"
                 />
                 <StatCard
@@ -99,38 +106,50 @@ const ClientDashboard = () => {
 
             {/* Recent Activity Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2">
+                <div className="glass-card p-6 lg:col-span-2">
                     <h2 className="text-xl font-heading font-bold mb-6">Recent Activity</h2>
                     <div className="space-y-6">
                         {projects.map((project) => (
-                            <div key={project.id} className="flex items-center gap-4 pb-4 border-b border-white/5 last:border-0 last:pb-0">
-                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                            <div key={project.id} className="flex items-start gap-4 pb-4 border-b border-white/5 last:border-0 last:pb-0 group">
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                                     <Briefcase className="w-5 h-5 text-primary" />
                                 </div>
                                 <div>
-                                    <h4 className="font-medium">Project Update: {project.name}</h4>
-                                    <p className="text-sm text-text-muted">{project.update}</p>
+                                    <h4 className="font-medium text-white group-hover:text-primary transition-colors">Project Update: {project.name}</h4>
+                                    <p className="text-sm text-text-muted mt-1">{project.update}</p>
                                 </div>
-                                <span className="ml-auto text-sm text-text-muted">{project.time}</span>
+                                <span className="ml-auto text-xs text-text-muted bg-white/5 px-2 py-1 rounded-lg">{project.time}</span>
                             </div>
                         ))}
                     </div>
-                </Card>
+                </div>
 
-                <Card>
+                <div className="glass-card p-6">
                     <h2 className="text-xl font-heading font-bold mb-6">Quick Actions</h2>
                     <div className="space-y-3">
-                        <button className="w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left transition-colors text-sm font-medium">
-                            + New Project Request
+                        <button
+                            onClick={() => navigate('/dashboard/projects')}
+                            className="w-full p-4 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-transparent text-left transition-all duration-300 text-sm font-medium flex items-center justify-between group"
+                        >
+                            <span>+ New Project Request</span>
+                            <Briefcase className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
-                        <button className="w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left transition-colors text-sm font-medium">
-                            Contact Support
+                        <button
+                            onClick={() => navigate('/dashboard/messages')}
+                            className="w-full p-4 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-transparent text-left transition-all duration-300 text-sm font-medium flex items-center justify-between group"
+                        >
+                            <span>Contact Support</span>
+                            <Clock className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
-                        <button className="w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left transition-colors text-sm font-medium">
-                            View Invoices
+                        <button
+                            onClick={() => alert("Invoicing feature coming soon!")}
+                            className="w-full p-4 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-transparent text-left transition-all duration-300 text-sm font-medium flex items-center justify-between group"
+                        >
+                            <span>View Invoices</span>
+                            <CheckCircle className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
                     </div>
-                </Card>
+                </div>
             </div>
         </DashboardLayout>
     );

@@ -29,9 +29,8 @@ const Input = ({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className={`w-full bg-white/5 border ${error ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary/50'
-                        } rounded-xl py-3 px-4 ${Icon ? 'pl-12' : ''
-                        } text-text-main placeholder:text-text-muted/50 outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300`}
+                    className={`w-full glass-input rounded-xl py-3 px-4 ${Icon ? 'pl-12' : ''
+                        } text-text-main outline-none transition-all duration-300`}
                     {...props}
                 />
             </div>

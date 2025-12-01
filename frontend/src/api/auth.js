@@ -23,3 +23,19 @@ export const logout = () => {
 export const getCurrentUser = () => {
     return JSON.parse(localStorage.getItem('user'));
 };
+
+export const updateProfile = async (userData) => {
+    const response = await api.put('/users/profile', userData);
+    // Update local storage if user data changes
+    if (response.data) {
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        const updatedUser = { ...currentUser, ...response.data };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+    return response.data;
+};
+
+export const changePassword = async (passwordData) => {
+    const response = await api.put('/users/password', passwordData);
+    return response.data;
+};
