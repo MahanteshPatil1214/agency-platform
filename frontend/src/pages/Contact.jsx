@@ -22,6 +22,14 @@ const Contact = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
+    const SERVICE_TYPE_MAPPING = {
+        'Web Development': 'WEB_DEVELOPMENT',
+        'App Development': 'APP_DEVELOPMENT',
+        'Digital Marketing': 'DIGITAL_MARKETING',
+        'SEO Optimization': 'SEO_OPTIMIZATION',
+        'UI/UX Design': 'UI_UX_DESIGN'
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -29,7 +37,13 @@ const Contact = () => {
 
         try {
             // Public requests are always NEW_CLIENT
-            await submitServiceRequest({ ...formData, requestType: 'NEW_CLIENT' });
+            const payload = {
+                ...formData,
+                serviceType: SERVICE_TYPE_MAPPING[formData.serviceType],
+                requestType: 'NEW_CLIENT'
+            };
+
+            await submitServiceRequest(payload);
             setMessage({ type: 'success', text: 'Request submitted! Our team will review it and contact you.' });
             setFormData({
                 fullName: '',
@@ -43,7 +57,9 @@ const Contact = () => {
                 referenceLinks: ''
             });
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to submit request. Please try again.' });
+            console.error("Submission error:", error);
+            const errorMsg = error.response?.data?.message || error.message || 'Failed to submit request. Please try again.';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setLoading(false);
         }

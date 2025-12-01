@@ -8,27 +8,30 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+
     @Autowired
     UserRepository userRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Attempting to load user by username or email: " + username);
+        logger.debug("Attempting to load user: {}", username);
         User user = userRepository.findByUsername(username)
                 .orElseGet(() -> {
-                    System.out.println("User not found by username: " + username + ". Attempting to find by email.");
+                    logger.debug("User not found by username: {}. Attempting to find by email.", username);
                     return userRepository.findByEmail(username)
                             .orElseThrow(() -> {
-                                System.out.println("User not found by username or email: " + username);
+                                logger.error("User not found by username or email: {}", username);
                                 return new UsernameNotFoundException(
                                         "User Not Found with username or email: " + username);
                             });
                 });
-        System.out.println("User found: " + user.getUsername() + ", Roles: " + user.getRoles());
         return UserDetailsImpl.build(user);
     }
 }

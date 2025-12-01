@@ -1,17 +1,18 @@
 package com.navam.app.controller;
 
 import com.navam.app.model.ServiceRequest;
-import com.navam.app.repository.ServiceRequestRepository;
+import com.navam.app.model.enums.RequestStatus;
+import com.navam.app.security.UserDetailsImpl;
+import com.navam.app.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import com.navam.app.security.UserDetailsImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import java.time.LocalDateTime;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -19,47 +20,18 @@ import java.util.List;
 public class ServiceRequestController {
 
     @Autowired
-    private ServiceRequestRepository serviceRequestRepository;
+    private ServiceRequestService serviceRequestService;
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitRequest(@RequestBody ServiceRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // If user is authenticated, link to client
-        if (authentication != null && authentication.isAuthenticated()
-                && !authentication.getPrincipal().equals("anonymousUser")) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            request.setClientId(userDetails.getId());
-
-            // Auto-populate user details if missing
-            if (request.getFullName() == null || request.getFullName().isEmpty()) {
-                request.setFullName(userDetails.getFullName());
-            }
-            if (request.getEmail() == null || request.getEmail().isEmpty()) {
-                request.setEmail(userDetails.getEmail());
-            }
-
-            // If it's a client, it must be NEW_PROJECT or PROJECT_UPDATE
-            if (request.getRequestType() == null) {
-                request.setRequestType("NEW_PROJECT"); // Default for client if not specified
-            }
-        } else {
-            // If unauthenticated, it MUST be a NEW_CLIENT request
-            request.setRequestType("NEW_CLIENT");
-            request.setClientId(null);
-            request.setProjectId(null);
-        }
-
-        request.setStatus("PENDING");
-        request.setCreatedAt(LocalDateTime.now());
-        serviceRequestRepository.save(request);
+        serviceRequestService.submitRequest(request);
         return ResponseEntity.ok("Service request submitted successfully!");
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public List<ServiceRequest> getAllRequests() {
-        return serviceRequestRepository.findAll();
+        return serviceRequestService.getAllRequests();
     }
 
     @GetMapping("/my-requests")
@@ -67,19 +39,19 @@ public class ServiceRequestController {
     public List<ServiceRequest> getMyRequests() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return serviceRequestRepository.findByClientId(userDetails.getId());
+        return serviceRequestService.getMyRequests(userDetails.getId());
     }
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateStatus(@PathVariable String id, @RequestBody java.util.Map<String, String> payload) {
-        String status = payload.get("status");
-        return serviceRequestRepository.findById(id)
-                .map(request -> {
-                    request.setStatus(status);
-                    serviceRequestRepository.save(request);
-                    return ResponseEntity.ok("Status updated successfully");
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> updateStatus(@PathVariable String id, @RequestBody Map<String, String> payload) {
+        String statusStr = payload.get("status");
+        try {
+            RequestStatus status = RequestStatus.valueOf(statusStr);
+            serviceRequestService.updateStatus(id, status);
+            return ResponseEntity.ok("Status updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status value");
+        }
     }
 }

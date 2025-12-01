@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -46,7 +50,8 @@ public class DataInitializer implements CommandLineRunner {
             roles.add("ROLE_USER");
             admin.setRoles(roles);
             userRepository.save(admin);
-            System.out.println("Admin roles updated.");
+            userRepository.save(admin);
+            logger.info("Admin roles updated.");
         } else {
             // Create new admin
             User admin = new User();
@@ -62,9 +67,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setRoles(roles);
 
             userRepository.save(admin);
-            System.out.println("Default Admin User created.");
-            System.out.println("Username: " + adminUsername);
-            System.out.println("Password: " + adminPassword);
+            logger.info("Default Admin User created: {}", adminUsername);
         }
 
         // Seed a test client
@@ -81,7 +84,8 @@ public class DataInitializer implements CommandLineRunner {
             client.setRoles(roles);
 
             userRepository.save(client);
-            System.out.println("Test Client created.");
+            userRepository.save(client);
+            logger.info("Test Client created: testclient");
         }
     }
 }

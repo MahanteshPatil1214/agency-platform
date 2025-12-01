@@ -1,5 +1,7 @@
 package com.navam.app.model;
 
+import com.navam.app.model.enums.RequestStatus;
+import com.navam.app.model.enums.ServiceType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -17,7 +19,7 @@ public class ServiceRequest {
     private String fullName;
     private String email;
     private String companyName;
-    private String serviceType;
+    private ServiceType serviceType;
     private String description;
     private String clientId; // Optional: ID of the registered user
     private String projectId; // Optional: ID of the existing project
@@ -28,6 +30,6 @@ public class ServiceRequest {
     private String timeline;
     private String referenceLinks;
     private String requestType; // NEW_CLIENT, NEW_PROJECT, PROJECT_UPDATE
-    private String status; // PENDING, APPROVED, REJECTED
+    private RequestStatus status; // PENDING, APPROVED, REJECTED
     private LocalDateTime createdAt;
 }
