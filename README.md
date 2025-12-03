@@ -25,6 +25,12 @@ NAVAM is a comprehensive full-stack application designed to manage service reque
 - **Role-Based Access Control (RBAC)**: Distinct permissions for `ROLE_ADMIN` and `ROLE_CLIENT`.
 - **Secure Backend**: Spring Security integration for API protection.
 
+### 5. 🔌 Model Context Protocol (MCP) Integration
+NAVAM implements the **Model Context Protocol (MCP)** to standardize AI interactions. This allows the AI Assistant to securely access and manipulate application data through defined tools.
+- **`list_projects` Tool**: Fetches project data based on the user's role (Admin sees all, Client sees theirs).
+- **`analyze_project` Tool**: Feeds project details to the Gemini AI for real-time health analysis.
+- **Extensible Architecture**: The MCP implementation (`MCPController`) is designed to easily support more tools in the future.
+
 ## 🛠️ Tech Stack
 
 ### Frontend
