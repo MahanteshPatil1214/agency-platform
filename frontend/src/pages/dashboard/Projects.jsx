@@ -66,7 +66,7 @@ const Projects = () => {
     const openExistingProjectModal = (project) => {
         setModalType('existing');
         setFormData({
-            serviceType: 'Project Update',
+            serviceType: project.serviceType || 'Web Development',
             description: '',
             companyName: project.name,
             projectName: project.name,
@@ -87,7 +87,7 @@ const Projects = () => {
         const requestData = {
             ...formData,
             projectId: selectedProject ? selectedProject.id : null,
-            serviceType: modalType === 'existing' ? 'Project Update' : formData.serviceType,
+            serviceType: formData.serviceType,
             requestType: modalType === 'existing' ? 'PROJECT_UPDATE' : 'NEW_PROJECT'
         };
 

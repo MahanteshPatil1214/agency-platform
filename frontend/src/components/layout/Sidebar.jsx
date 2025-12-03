@@ -8,7 +8,8 @@ import {
     Briefcase,
     MessageSquare,
     PieChart,
-    FileText
+    FileText,
+    Sparkles
 } from 'lucide-react';
 import { logout } from '../../api/auth';
 
@@ -20,6 +21,7 @@ const Sidebar = ({ role = 'client' }) => {
         { name: 'Projects', path: '/dashboard/client/projects', icon: Briefcase },
         { name: 'My Requests', path: '/dashboard/client/requests', icon: FileText },
         { name: 'Messages', path: '/dashboard/client/messages', icon: MessageSquare },
+        { name: 'AI Assistant', path: '/dashboard/client/ai-assistant', icon: Sparkles },
         { name: 'Settings', path: '/dashboard/client/settings', icon: Settings },
     ];
 
@@ -28,6 +30,7 @@ const Sidebar = ({ role = 'client' }) => {
         { name: 'Clients', path: '/dashboard/admin/clients', icon: Users },
         { name: 'Messages', path: '/dashboard/admin/messages', icon: MessageSquare },
         { name: 'Analytics', path: '/dashboard/admin/analytics', icon: PieChart },
+        { name: 'AI Assistant', path: '/dashboard/admin/ai-assistant', icon: Sparkles },
         { name: 'Settings', path: '/dashboard/admin/settings', icon: Settings },
     ];
 

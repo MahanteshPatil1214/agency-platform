@@ -48,10 +48,10 @@ public class DataInitializer implements CommandLineRunner {
             }
             roles.add("ROLE_ADMIN");
             roles.add("ROLE_USER");
+            admin.setPassword(passwordEncoder.encode(adminPassword)); // Always update password
             admin.setRoles(roles);
             userRepository.save(admin);
-            userRepository.save(admin);
-            logger.info("Admin roles updated.");
+            logger.info("Admin roles and password updated.");
         } else {
             // Create new admin
             User admin = new User();

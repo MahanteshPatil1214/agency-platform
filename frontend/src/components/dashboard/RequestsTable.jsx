@@ -13,7 +13,7 @@ const RequestsTable = ({
     searchTerm,
     setSearchTerm,
     onViewDetails,
-    onCreateClient
+    onApprove
 }) => {
     return (
         <div className="glass-card p-6">
@@ -120,7 +120,7 @@ const RequestsTable = ({
                                         <Eye className="w-4 h-4" />
                                     </Button>
                                     {req.status === 'PENDING' && (
-                                        <Button size="sm" onClick={() => onCreateClient(req)} className="bg-primary/10 text-primary hover:bg-primary hover:text-black border border-primary/20">
+                                        <Button size="sm" onClick={() => onApprove(req)} className="bg-primary/10 text-primary hover:bg-primary hover:text-black border border-primary/20">
                                             Approve
                                         </Button>
                                     )}

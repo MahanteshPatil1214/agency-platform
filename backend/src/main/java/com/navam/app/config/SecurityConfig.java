@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/contact/**").permitAll()
                         .requestMatchers("/api/requests/submit").permitAll()
+                        .requestMatchers("/api/mcp/**").authenticated() // Require login for MCP
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());

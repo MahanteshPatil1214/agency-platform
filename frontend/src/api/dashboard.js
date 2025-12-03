@@ -173,12 +173,32 @@ export const getMessages = async (userId) => {
     }
 };
 
-export const sendMessage = async (receiverId, content) => {
+export const sendMessage = async (receiverId, content, subject, priority) => {
     try {
-        const response = await axios.post(`${API_URL}/messages/send`, { receiverId, content }, { headers: getAuthHeader() });
+        const response = await axios.post(`${API_URL}/messages/send`, { receiverId, content, subject, priority }, { headers: getAuthHeader() });
         return response.data;
     } catch (error) {
         console.error("Error sending message", error);
+        throw error;
+    }
+};
+
+export const generateTasks = async (description) => {
+    try {
+        const response = await axios.post(`${API_URL}/ai/generate-tasks`, { description }, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error generating tasks", error);
+        throw error;
+    }
+};
+
+export const callMcpTool = async (toolName, args) => {
+    try {
+        const response = await axios.post(`${API_URL}/mcp/call`, { name: toolName, arguments: args }, { headers: getAuthHeader() });
+        return response.data;
+    } catch (error) {
+        console.error("Error calling MCP tool", error);
         throw error;
     }
 };

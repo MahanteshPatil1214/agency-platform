@@ -13,7 +13,10 @@ import ProjectDetails from './pages/dashboard/ProjectDetails';
 import MyRequests from './pages/dashboard/MyRequests';
 import Settings from './pages/dashboard/Settings';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
+import Clients from './pages/dashboard/Clients';
+import Analytics from './pages/dashboard/Analytics';
 import Messages from './pages/dashboard/Messages';
+import AIAssistant from './pages/dashboard/AIAssistant';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
@@ -81,6 +84,14 @@ function App() {
                     }
                 />
                 <Route
+                    path="/dashboard/client/ai-assistant"
+                    element={
+                        <ProtectedRoute allowedRoles={['ROLE_USER', 'ROLE_CLIENT']}>
+                            <AIAssistant role="client" />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/dashboard/admin"
                     element={
                         <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
@@ -92,7 +103,15 @@ function App() {
                     path="/dashboard/admin/clients"
                     element={
                         <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
-                            <AdminDashboard />
+                            <Clients />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/dashboard/admin/analytics"
+                    element={
+                        <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
+                            <Analytics />
                         </ProtectedRoute>
                     }
                 />
@@ -109,6 +128,14 @@ function App() {
                     element={
                         <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
                             <Messages role="admin" />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/dashboard/admin/ai-assistant"
+                    element={
+                        <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
+                            <AIAssistant role="admin" />
                         </ProtectedRoute>
                     }
                 />

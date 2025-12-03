@@ -39,6 +39,7 @@ public class MessageController {
         message.setRead(false);
 
         System.out.println("Sending message from: " + message.getSenderId() + " to: " + message.getReceiverId()
+                + " Subject: " + message.getSubject() + " Priority: " + message.getPriority()
                 + " Content: " + message.getContent());
 
         messageRepository.save(message);

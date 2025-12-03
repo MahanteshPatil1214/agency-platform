@@ -17,6 +17,8 @@ public class Message {
     private String senderId;
     private String receiverId;
     private String content;
+    private String subject; // New field for email-style subject
+    private String priority; // New field: LOW, NORMAL, HIGH
     private LocalDateTime createdAt;
     private boolean isRead;
 }

@@ -99,39 +99,9 @@ const AdminDashboard = () => {
         setShowDetailsModal(true);
     };
 
-    const handleCreateClient = (request = null) => {
-        if (request) {
-            // Check if client already exists
-            const existingClient = clients.find(c => c.email === request.email);
-            if (existingClient) {
-                // Client exists, open Create Project modal instead
-                setProjectForm({
-                    clientId: existingClient.id,
-                    name: `${request.serviceType} Project`,
-                    description: request.description,
-                    status: 'Active',
-                    serviceType: request.serviceType,
-                    priority: 'Medium',
-                    startDate: '',
-                    endDate: ''
-                });
-                setSelectedRequest(request); // Keep track of request to update status later
-                setShowDetailsModal(false);
-                setShowProjectModal(true);
-                alert(`Client with email ${request.email} already exists. Redirecting to Create Project.`);
-                return;
-            }
-
-            setClientForm({
-                username: '',
-                fullName: request.fullName,
-                email: request.email,
-                companyName: request.companyName,
-                password: '',
-                confirmPassword: ''
-            });
-            setSelectedRequest(request);
-        } else {
+    const handleApproveRequest = async (request = null) => {
+        if (!request) {
+            // Manual trigger for Create Client (button click)
             setClientForm({
                 username: '',
                 fullName: '',
@@ -141,7 +111,58 @@ const AdminDashboard = () => {
                 confirmPassword: ''
             });
             setSelectedRequest(null);
+            setShowCreateModal(true);
+            return;
         }
+
+        // Handle Project Update Requests
+        if (request.requestType === 'PROJECT_UPDATE') {
+            if (window.confirm(`Approve update request for project "${request.companyName}"?`)) {
+                try {
+                    await updateRequestStatus(request.id, 'APPROVED');
+                    // Refresh requests
+                    const requestsData = await getServiceRequests();
+                    setRequests(requestsData);
+                    alert("Request approved successfully.");
+                } catch (err) {
+                    console.error("Error approving request", err);
+                    alert("Failed to approve request.");
+                }
+            }
+            return;
+        }
+
+        // Handle New Client / New Project Requests
+        // Check if client already exists
+        const existingClient = clients.find(c => c.email === request.email);
+        if (existingClient) {
+            // Client exists, open Create Project modal instead
+            setProjectForm({
+                clientId: existingClient.id,
+                name: `${request.serviceType} Project`,
+                description: request.description,
+                status: 'Active',
+                serviceType: request.serviceType,
+                priority: 'Medium',
+                startDate: '',
+                endDate: ''
+            });
+            setSelectedRequest(request); // Keep track of request to update status later
+            setShowDetailsModal(false);
+            setShowProjectModal(true);
+            alert(`Client with email ${request.email} already exists. Redirecting to Create Project.`);
+            return;
+        }
+
+        setClientForm({
+            username: '',
+            fullName: request.fullName,
+            email: request.email,
+            companyName: request.companyName,
+            password: '',
+            confirmPassword: ''
+        });
+        setSelectedRequest(request);
         setShowDetailsModal(false); // Close details modal if open
         setShowCreateModal(true);
     };
@@ -292,7 +313,7 @@ const AdminDashboard = () => {
                         <Briefcase className="w-5 h-5 mr-2" />
                         Create Project
                     </Button>
-                    <Button onClick={() => handleCreateClient()}>
+                    <Button onClick={() => handleApproveRequest()}>
                         <UserPlus className="w-5 h-5 mr-2" />
                         Create Client
                     </Button>
@@ -321,7 +342,7 @@ const AdminDashboard = () => {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 onViewDetails={handleViewDetails}
-                onCreateClient={handleCreateClient}
+                onApprove={handleApproveRequest}
             />
 
             {/* View Details Modal - Kept inline for simplicity as it's small, or could be extracted too */}
@@ -391,7 +412,7 @@ const AdminDashboard = () => {
                         <div className="flex justify-end gap-3">
                             <Button variant="ghost" onClick={() => setShowDetailsModal(false)}>Close</Button>
                             {selectedRequest.status === 'PENDING' && (
-                                <Button onClick={() => handleCreateClient(selectedRequest)}>
+                                <Button onClick={() => handleApproveRequest(selectedRequest)}>
                                     Approve & Create Account
                                 </Button>
                             )}

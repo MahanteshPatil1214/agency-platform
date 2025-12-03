@@ -14,7 +14,7 @@ import {
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import { getProjectById, addTask, updateTask } from '../../api/dashboard';
+import { getProjectById, addTask, updateTask, generateTasks } from '../../api/dashboard';
 
 const ProjectDetails = ({ role = 'client' }) => {
     const { id } = useParams();
@@ -24,6 +24,35 @@ const ProjectDetails = ({ role = 'client' }) => {
     const [error, setError] = useState(null);
     const [showAddTask, setShowAddTask] = useState(false);
     const [newTask, setNewTask] = useState({ title: '', status: 'Pending' });
+    const [generatingTasks, setGeneratingTasks] = useState(false);
+
+    const handleGenerateTasks = async () => {
+        if (!project.description) {
+            alert("Project description is required to generate tasks.");
+            return;
+        }
+        setGeneratingTasks(true);
+        try {
+            const tasks = await generateTasks(project.description);
+            if (tasks && tasks.length > 0) {
+                // Add tasks one by one (or could be batch if backend supported it)
+                for (const taskTitle of tasks) {
+                    await addTask(id, { title: taskTitle, status: 'Pending', completed: false });
+                }
+                // Refresh project
+                const updatedProject = await getProjectById(id);
+                setProject(updatedProject);
+                alert(`Successfully generated and added ${tasks.length} tasks!`);
+            } else {
+                alert("AI could not generate tasks from the description.");
+            }
+        } catch (error) {
+            console.error("Error generating tasks:", error);
+            alert("Failed to generate tasks. Please check API key or try again.");
+        } finally {
+            setGeneratingTasks(false);
+        }
+    };
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -117,8 +146,8 @@ const ProjectDetails = ({ role = 'client' }) => {
                         <div className="flex items-center gap-3 mb-2">
                             <h1 className="text-3xl font-heading font-bold">{project.name}</h1>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium border ${project.status === 'Active' ? 'bg-primary/10 text-primary border-primary/20' :
-                                    project.status === 'Completed' ? 'bg-green-400/10 text-green-400 border-green-400/20' :
-                                        'bg-accent/10 text-accent border-accent/20'
+                                project.status === 'Completed' ? 'bg-green-400/10 text-green-400 border-green-400/20' :
+                                    'bg-accent/10 text-accent border-accent/20'
                                 }`}>
                                 {project.status}
                             </span>
@@ -127,10 +156,30 @@ const ProjectDetails = ({ role = 'client' }) => {
                     </div>
 
                     {role === 'admin' && (
-                        <Button onClick={() => setShowAddTask(true)}>
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add Task
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={handleGenerateTasks}
+                                variant="outline"
+                                className="border-primary/50 text-primary hover:bg-primary/10"
+                                disabled={generatingTasks}
+                            >
+                                {generatingTasks ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary mr-2"></div>
+                                        Generating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="mr-2">✨</span>
+                                        AI Auto-Task
+                                    </>
+                                )}
+                            </Button>
+                            <Button onClick={() => setShowAddTask(true)}>
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add Task
+                            </Button>
+                        </div>
                     )}
                 </div>
             </div>
@@ -182,16 +231,16 @@ const ProjectDetails = ({ role = 'client' }) => {
                                     <div
                                         key={task.id}
                                         className={`p-4 rounded-xl border transition-all duration-200 flex items-center justify-between ${task.status === 'Completed'
-                                                ? 'bg-green-400/5 border-green-400/20'
-                                                : 'bg-white/5 border-white/5 hover:border-white/10'
+                                            ? 'bg-green-400/5 border-green-400/20'
+                                            : 'bg-white/5 border-white/5 hover:border-white/10'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => role === 'admin' && handleToggleTask(task.id, task.status)}
                                                 className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${task.status === 'Completed'
-                                                        ? 'bg-green-400 border-green-400 text-black'
-                                                        : 'border-white/30 hover:border-primary'
+                                                    ? 'bg-green-400 border-green-400 text-black'
+                                                    : 'border-white/30 hover:border-primary'
                                                     } ${role !== 'admin' ? 'cursor-default' : 'cursor-pointer'}`}
                                             >
                                                 {task.status === 'Completed' && <CheckCircle className="w-3 h-3" />}
@@ -232,8 +281,8 @@ const ProjectDetails = ({ role = 'client' }) => {
                                 <span className="text-xs text-text-muted uppercase block mb-1">Priority</span>
                                 <div className="flex items-center gap-2">
                                     <span className={`px-2 py-1 rounded text-xs font-medium ${project.priority === 'High' || project.priority === 'Critical' ? 'bg-red-400/10 text-red-400' :
-                                            project.priority === 'Medium' ? 'bg-accent/10 text-accent' :
-                                                'bg-green-400/10 text-green-400'
+                                        project.priority === 'Medium' ? 'bg-accent/10 text-accent' :
+                                            'bg-green-400/10 text-green-400'
                                         }`}>
                                         {project.priority || 'Medium'}
                                     </span>

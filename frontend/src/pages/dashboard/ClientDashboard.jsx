@@ -107,14 +107,14 @@ const ClientDashboard = () => {
                     <h2 className="text-xl font-heading font-bold mb-6">Quick Actions</h2>
                     <div className="space-y-3">
                         <button
-                            onClick={() => navigate('/dashboard/projects')}
+                            onClick={() => navigate('/dashboard/client/projects')}
                             className="w-full p-4 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-transparent text-left transition-all duration-300 text-sm font-medium flex items-center justify-between group"
                         >
                             <span>+ New Project Request</span>
                             <Briefcase className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
                         <button
-                            onClick={() => navigate('/dashboard/messages')}
+                            onClick={() => navigate('/dashboard/client/messages')}
                             className="w-full p-4 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-transparent text-left transition-all duration-300 text-sm font-medium flex items-center justify-between group"
                         >
                             <span>Contact Support</span>
