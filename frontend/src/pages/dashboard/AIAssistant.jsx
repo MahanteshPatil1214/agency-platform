@@ -173,11 +173,19 @@ const AIAssistant = ({ role }) => {
                     {analysis ? (
                         <div className="space-y-6 animate-fade-in">
                             {/* Status Card */}
-                            <div className="glass-card p-6 border-l-4 border-l-green-500">
-                                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-green-400">
-                                    <Activity className="w-5 h-5" />
-                                    Project Status
-                                </h3>
+                            <div className="glass-card p-6 border-l-4 border-l-green-500 relative group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2 text-green-400">
+                                        <Activity className="w-5 h-5" />
+                                        Project Status
+                                    </h3>
+                                    <Button
+                                        onClick={() => navigator.clipboard.writeText(`Status: ${analysis.status}\n\nRisks: ${analysis.risks}\n\nNext Steps: ${analysis.nextSteps}`)}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs py-1 px-3 bg-white/10 hover:bg-white/20"
+                                    >
+                                        Copy Report
+                                    </Button>
+                                </div>
                                 <div className="bg-black/20 rounded-xl p-4">
                                     {renderSectionContent(analysis.status) || <p className="text-text-muted">No specific status data found.</p>}
                                 </div>

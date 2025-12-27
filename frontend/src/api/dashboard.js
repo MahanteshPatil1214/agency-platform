@@ -1,20 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api';
-
-const getAuthHeader = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.token) {
-        return { Authorization: 'Bearer ' + user.token };
-    } else {
-        return {};
-    }
-};
+import api from './axios';
 
 // Client Dashboard API
 export const getClientStats = async () => {
     try {
-        const response = await axios.get(`${API_URL}/projects/stats`, { headers: getAuthHeader() });
+        const response = await api.get('/projects/stats');
         return response.data;
     } catch (error) {
         console.error("Error fetching client stats", error);
@@ -24,7 +13,7 @@ export const getClientStats = async () => {
 
 export const getClientProjects = async () => {
     try {
-        const response = await axios.get(`${API_URL}/projects/my-projects`, { headers: getAuthHeader() });
+        const response = await api.get('/projects/my-projects');
         return response.data;
     } catch (error) {
         console.error("Error fetching client projects", error);
@@ -34,7 +23,7 @@ export const getClientProjects = async () => {
 
 export const submitServiceRequest = async (requestData) => {
     try {
-        const response = await axios.post(`${API_URL}/requests/submit`, requestData, { headers: getAuthHeader() });
+        const response = await api.post('/requests/submit', requestData);
         return response.data;
     } catch (error) {
         console.error("Error submitting service request", error);
@@ -44,7 +33,7 @@ export const submitServiceRequest = async (requestData) => {
 
 export const getMyRequests = async () => {
     try {
-        const response = await axios.get(`${API_URL}/requests/my-requests`, { headers: getAuthHeader() });
+        const response = await api.get('/requests/my-requests');
         return response.data;
     } catch (error) {
         console.error("Error fetching my requests", error);
@@ -55,7 +44,7 @@ export const getMyRequests = async () => {
 // Admin Dashboard API
 export const getAdminStats = async () => {
     try {
-        const response = await axios.get(`${API_URL}/dashboard/admin/stats`, { headers: getAuthHeader() });
+        const response = await api.get('/dashboard/admin/stats');
         return response.data;
     } catch (error) {
         console.error("Error fetching admin stats", error);
@@ -65,7 +54,7 @@ export const getAdminStats = async () => {
 
 export const getAllClients = async () => {
     try {
-        const response = await axios.get(`${API_URL}/users/clients`, { headers: getAuthHeader() });
+        const response = await api.get('/users/clients');
         return response.data;
     } catch (error) {
         console.error("Error fetching all clients", error);
@@ -75,7 +64,7 @@ export const getAllClients = async () => {
 
 export const getProjects = async () => {
     try {
-        const response = await axios.get(`${API_URL}/projects`, { headers: getAuthHeader() });
+        const response = await api.get('/projects');
         return response.data;
     } catch (error) {
         console.error("Error fetching projects", error);
@@ -85,7 +74,7 @@ export const getProjects = async () => {
 
 export const getAllProjects = async () => {
     try {
-        const response = await axios.get(`${API_URL}/projects/all`, { headers: getAuthHeader() });
+        const response = await api.get('/projects/all');
         return response.data;
     } catch (error) {
         console.error("Error fetching all projects", error);
@@ -95,7 +84,7 @@ export const getAllProjects = async () => {
 
 export const getServiceRequests = async () => {
     try {
-        const response = await axios.get(`${API_URL}/requests/all`, { headers: getAuthHeader() });
+        const response = await api.get('/requests/all');
         return response.data;
     } catch (error) {
         console.error("Error fetching service requests", error);
@@ -105,7 +94,7 @@ export const getServiceRequests = async () => {
 
 export const createProject = async (projectData) => {
     try {
-        const response = await axios.post(`${API_URL}/projects/create`, projectData, { headers: getAuthHeader() });
+        const response = await api.post('/projects/create', projectData);
         return response.data;
     } catch (error) {
         console.error("Error creating project", error);
@@ -115,7 +104,7 @@ export const createProject = async (projectData) => {
 
 export const getProjectById = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/projects/${id}`, { headers: getAuthHeader() });
+        const response = await api.get(`/projects/${id}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching project", error);
@@ -125,7 +114,7 @@ export const getProjectById = async (id) => {
 
 export const addTask = async (projectId, task) => {
     try {
-        const response = await axios.post(`${API_URL}/projects/${projectId}/tasks`, task, { headers: getAuthHeader() });
+        const response = await api.post(`/projects/${projectId}/tasks`, task);
         return response.data;
     } catch (error) {
         console.error("Error adding task", error);
@@ -135,7 +124,7 @@ export const addTask = async (projectId, task) => {
 
 export const updateTask = async (projectId, taskId, taskUpdate) => {
     try {
-        const response = await axios.put(`${API_URL}/projects/${projectId}/tasks/${taskId}`, taskUpdate, { headers: getAuthHeader() });
+        const response = await api.put(`/projects/${projectId}/tasks/${taskId}`, taskUpdate);
         return response.data;
     } catch (error) {
         console.error("Error updating task", error);
@@ -145,7 +134,7 @@ export const updateTask = async (projectId, taskId, taskUpdate) => {
 
 export const updateRequestStatus = async (id, status) => {
     try {
-        const response = await axios.put(`${API_URL}/requests/${id}/status`, { status }, { headers: getAuthHeader() });
+        const response = await api.put(`/requests/${id}/status`, { status });
         return response.data;
     } catch (error) {
         console.error("Error updating request status", error);
@@ -155,7 +144,7 @@ export const updateRequestStatus = async (id, status) => {
 
 export const getContacts = async () => {
     try {
-        const response = await axios.get(`${API_URL}/messages/contacts`, { headers: getAuthHeader() });
+        const response = await api.get('/messages/contacts');
         return response.data;
     } catch (error) {
         console.error("Error fetching contacts", error);
@@ -165,7 +154,7 @@ export const getContacts = async () => {
 
 export const getMessages = async (userId) => {
     try {
-        const response = await axios.get(`${API_URL}/messages/conversation/${userId}`, { headers: getAuthHeader() });
+        const response = await api.get(`/messages/conversation/${userId}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching messages", error);
@@ -175,7 +164,7 @@ export const getMessages = async (userId) => {
 
 export const sendMessage = async (receiverId, content, subject, priority) => {
     try {
-        const response = await axios.post(`${API_URL}/messages/send`, { receiverId, content, subject, priority }, { headers: getAuthHeader() });
+        const response = await api.post('/messages/send', { receiverId, content, subject, priority });
         return response.data;
     } catch (error) {
         console.error("Error sending message", error);
@@ -185,7 +174,7 @@ export const sendMessage = async (receiverId, content, subject, priority) => {
 
 export const generateTasks = async (description) => {
     try {
-        const response = await axios.post(`${API_URL}/ai/generate-tasks`, { description }, { headers: getAuthHeader() });
+        const response = await api.post('/ai/generate-tasks', { description });
         return response.data;
     } catch (error) {
         console.error("Error generating tasks", error);
@@ -195,7 +184,7 @@ export const generateTasks = async (description) => {
 
 export const callMcpTool = async (toolName, args) => {
     try {
-        const response = await axios.post(`${API_URL}/mcp/call`, { name: toolName, arguments: args }, { headers: getAuthHeader() });
+        const response = await api.post('/mcp/call', { name: toolName, arguments: args });
         return response.data;
     } catch (error) {
         console.error("Error calling MCP tool", error);

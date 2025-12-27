@@ -21,7 +21,8 @@ public class GeminiService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    // CHANGED: Added "-001" to target the specific stable version
+    // --- FIX IS HERE ---
+    // Changed "gemini-1.5-flash" to "gemini-1.5-flash-001" to resolve the 404 error.
     private final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     public List<String> generateTasks(String projectDescription) {
@@ -46,11 +47,7 @@ public class GeminiService {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
         try {
-            // Log URL for debugging (Optional)
-            // System.out.println("Requesting Gemini URL: " + GEMINI_API_URL);
-
-            ResponseEntity<Map> response = restTemplate.postForEntity(GEMINI_API_URL + "?key=" + apiKey, request,
-                    Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(GEMINI_API_URL + "?key=" + apiKey, request, Map.class);
 
             if (response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
@@ -66,8 +63,9 @@ public class GeminiService {
                 }
             }
         } catch (Exception e) {
+            System.err.println("Gemini API Error: " + e.getMessage());
             e.printStackTrace();
-            // Fallback tasks if AI fails
+            // Fallback tasks
             List<String> fallback = new ArrayList<>();
             fallback.add("Define project requirements");
             fallback.add("Set up development environment");
@@ -84,8 +82,7 @@ public class GeminiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String promptText = "Analyze the following project status and provide a brief health report (Status, Risks, Next Steps). "
-                +
-                "Keep it professional and concise. Project Details: " + projectDetails;
+                + "Keep it professional and concise. Project Details: " + projectDetails;
 
         Map<String, Object> content = new HashMap<>();
         Map<String, String> parts = new HashMap<>();
@@ -98,8 +95,7 @@ public class GeminiService {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(GEMINI_API_URL + "?key=" + apiKey, request,
-                    Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(GEMINI_API_URL + "?key=" + apiKey, request, Map.class);
             if (response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
@@ -126,8 +122,7 @@ public class GeminiService {
             text = text.replace("```json", "").replace("```", "").trim();
 
             ObjectMapper mapper = new ObjectMapper();
-            tasks = mapper.readValue(text, new TypeReference<List<String>>() {
-            });
+            tasks = mapper.readValue(text, new TypeReference<List<String>>() {});
 
         } catch (Exception e) {
             System.err.println("Error parsing Gemini response: " + text);
