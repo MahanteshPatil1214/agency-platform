@@ -2,6 +2,8 @@
 
 NAVAM is a comprehensive full-stack application designed to manage service requests and agency projects. It features a robust corporate messaging system and an AI-powered assistant for project analysis.
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-2ea44f?style=for-the-badge&logo=render)](https://navam.onrender.com)
+
 ## 🚀 Key Features
 
 ### 1. 🤖 AI Assistant (Powered by Google Gemini)
@@ -39,6 +41,7 @@ NAVAM implements the **Model Context Protocol (MCP)** to standardize AI interact
 - **Vite**: Fast build tool and development server.
 - **Lucide React**: Beautiful, consistent icons.
 - **Axios**: HTTP client for API communication.
+- **Framer Motion**: Library for production-ready animations.
 
 ### Backend
 - **Java Spring Boot**: Robust, scalable backend framework.
@@ -46,6 +49,7 @@ NAVAM implements the **Model Context Protocol (MCP)** to standardize AI interact
 - **MongoDB**: NoSQL database for flexible data storage.
 - **Google Gemini API**: Generative AI for project analysis and task generation.
 - **Maven**: Dependency management.
+- **Spring Dotenv**: Loads environment variables from .env file.
 
 ## ⚙️ Setup Instructions
 
@@ -54,6 +58,7 @@ NAVAM implements the **Model Context Protocol (MCP)** to standardize AI interact
 - Node.js 18+
 - MongoDB (Running locally or Atlas URI)
 - Google Gemini API Key
+- Docker (Optional, for containerized setup)
 
 ### 1. Backend Setup
 1.  Navigate to the backend directory:
@@ -88,6 +93,20 @@ NAVAM implements the **Model Context Protocol (MCP)** to standardize AI interact
     ```bash
     npm run dev
     ```
+
+### 🐳 Docker Setup
+1.  Ensure Docker and Docker Compose are installed.
+2.  Run the application:
+    ```bash
+    docker-compose up --build
+    ```
+3.  Access the application:
+    - Frontend: `http://localhost:5173`
+    - Backend: `http://localhost:8080`
+
+## 🚀 Deployment
+
+The application is hosted on Render. You can view the live demo here: [https://navam.onrender.com](https://navam.onrender.com)
 
 ## 📖 Usage
 
